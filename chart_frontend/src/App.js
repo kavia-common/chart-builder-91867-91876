@@ -7,28 +7,17 @@ import ChartCanvas from './components/ChartCanvas';
 import DataTable from './components/DataTable';
 import { getSampleData } from './utils/sampleData';
 import { parseCsv } from './utils/csv';
-import { useChartBuilderStore } from './state/useChartBuilderStore';
+import { ChartBuilderProvider, useChartBuilderStore } from './state/useChartBuilderStore';
 
 /**
  * PUBLIC_INTERFACE
- * App: Base application shell with Ocean Professional theme and layout.
- * - Top navigation
- * - Sidebar with controls
- * - Main workspace with Chart and collapsible Data table
+ * AppShell: Inner app that assumes a provided store via ChartBuilderProvider.
  */
-function App() {
+function AppShell() {
   const [theme, setTheme] = useState('light');
 
-  // Centralized store for chart settings
-  const { state, update } = useChartBuilderStore({
-    chartType: 'bar',
-    xKey: 'category',
-    yKeys: ['value'],
-    showLegend: true,
-    data: getSampleData(),
-    colors: ['#2563EB', '#F59E0B', '#10B981', '#EF4444'],
-  });
-
+  // Store access via context
+  const { state, update } = useChartBuilderStore();
   const { data, chartType, xKey, yKeys, showLegend, colors } = state;
 
   // Apply theme attribute for CSS variables switching
@@ -163,6 +152,27 @@ function App() {
         </div>
       </main>
     </div>
+  );
+}
+
+/**
+ * PUBLIC_INTERFACE
+ * App: Wraps AppShell in ChartBuilderProvider to seed initial state.
+ */
+function App() {
+  return (
+    <ChartBuilderProvider
+      initial={{
+        chartType: 'bar',
+        xKey: 'category',
+        yKeys: ['value'],
+        showLegend: true,
+        data: getSampleData(),
+        colors: ['#2563EB', '#F59E0B', '#10B981', '#EF4444'],
+      }}
+    >
+      <AppShell />
+    </ChartBuilderProvider>
   );
 }
 
