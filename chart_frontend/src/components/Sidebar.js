@@ -3,6 +3,8 @@ import ChartTypeSelect from './Controls/ChartTypeSelect';
 import ColorPicker from './Controls/ColorPicker';
 import AxesSettings from './Controls/AxesSettings';
 import LegendToggle from './Controls/LegendToggle';
+import { getSampleDatasetNames, getSampleDatasetByName } from '../utils/sampleData';
+import { useChartBuilderStore } from '../state/useChartBuilderStore';
 
 /**
  * PUBLIC_INTERFACE
@@ -35,6 +37,9 @@ function Sidebar({
   showLegend = true,
   onToggleLegend = () => {},
 }) {
+  const { loadDataset } = useChartBuilderStore();
+  const sampleNames = getSampleDatasetNames();
+
   const sectionTitle = (title) => (
     <div style={{ fontWeight: 600, color: 'var(--color-text)', marginBottom: 8 }}>{title}</div>
   );
@@ -52,8 +57,22 @@ function Sidebar({
         <section>
           {sectionTitle('Data')}
           <div style={{ display: 'grid', gap: 8 }}>
-            <button className="btn btn-secondary" onClick={onLoadSample}>
-              Load Sample
+            <div style={{ display: 'grid', gap: 6 }}>
+              {sampleNames.map((name) => (
+                <button
+                  key={name}
+                  className="btn btn-secondary"
+                  onClick={() => {
+                    const ds = getSampleDatasetByName(name);
+                    if (ds) loadDataset(ds);
+                  }}
+                >
+                  Load {name}
+                </button>
+              ))}
+            </div>
+            <button className="btn btn-ghost" onClick={onLoadSample}>
+              Quick Demo Dataset
             </button>
             <div style={{ color: 'var(--color-text-muted)', fontSize: 12 }}>
               Import CSV from the top bar to use your own data.

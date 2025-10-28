@@ -42,7 +42,24 @@ export function ChartBuilderProvider({ initial, children }) {
   // PUBLIC_INTERFACE
   const update = (patch) => dispatch({ type: 'PATCH', patch });
 
-  const value = useMemo(() => ({ state, update, dispatch }), [state]);
+  // PUBLIC_INTERFACE
+  // loadDataset: convenience action to set data and infer xKey/yKeys from first row.
+  const loadDataset = (rows) => {
+    if (!Array.isArray(rows) || rows.length === 0) return;
+    const cols = Object.keys(rows[0] || {});
+    const newX = cols[0] || 'category';
+    const newY = cols.slice(1);
+    dispatch({
+      type: 'PATCH',
+      patch: {
+        data: rows,
+        xKey: newX,
+        yKeys: newY.length ? newY : ['value'],
+      },
+    });
+  };
+
+  const value = useMemo(() => ({ state, update, dispatch, loadDataset }), [state]);
   return <ChartBuilderContext.Provider value={value}>{children}</ChartBuilderContext.Provider>;
 }
 

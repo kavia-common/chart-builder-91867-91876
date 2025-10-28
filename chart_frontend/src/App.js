@@ -92,7 +92,11 @@ function AppShell() {
   // PUBLIC_INTERFACE
   const loadSample = () => {
     const sample = getSampleData();
-    update({ data: sample, xKey: 'category', yKeys: ['value'] });
+    // Infer keys defensively
+    const cols = sample[0] ? Object.keys(sample[0]) : ['category', 'value'];
+    const newX = cols[0] || 'category';
+    const newY = cols.slice(1);
+    update({ data: sample, xKey: newX, yKeys: newY.length ? newY : ['value'] });
     setTableOpen(true);
   };
 
