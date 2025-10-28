@@ -19,8 +19,10 @@ function AxesSettings({
 }) {
   return (
     <div style={{ display: 'grid', gap: 8 }}>
-      <label style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>X Axis</label>
+      <label htmlFor="x-axis-select" style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>X Axis</label>
       <select
+        id="x-axis-select"
+        aria-label="Select X axis"
         value={xKey || ''}
         onChange={(e) => onChangeXKey(e.target.value)}
         className="card"

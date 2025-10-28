@@ -19,11 +19,18 @@ function ImportDataModal({ open = false, onClose = () => {} }) {
   const [text, setText] = useState('');
   const [error, setError] = useState('');
   const fileInputRef = useRef(null);
+  const modalCardRef = useRef(null);
+  const firstFocusableRef = useRef(null);
+  const lastFocusableRef = useRef(null);
 
   useEffect(() => {
     if (open) {
       setText('');
       setError('');
+      // focus first actionable control
+      setTimeout(() => {
+        firstFocusableRef.current?.focus();
+      }, 0);
     }
   }, [open]);
 
@@ -77,13 +84,35 @@ function ImportDataModal({ open = false, onClose = () => {} }) {
     commitData(rows);
   };
 
-  // Close on Escape
+  // Close on Escape and trap focus
   useEffect(() => {
-    const onKey = (e) => {
-      if (e.key === 'Escape' && open) onClose();
+    if (!open) return;
+
+    const handleKeydown = (e) => {
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'Tab') {
+        const focusable = modalCardRef.current?.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (!focusable || focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      }
     };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+
+    document.addEventListener('keydown', handleKeydown);
+    return () => document.removeEventListener('keydown', handleKeydown);
   }, [open, onClose]);
 
   if (!open) return null;
@@ -97,7 +126,7 @@ function ImportDataModal({ open = false, onClose = () => {} }) {
       style={{
         position: 'fixed',
         inset: 0,
-        background: 'rgba(0,0,0,.35)',
+        background: 'rgba(0,0,0,.45)',
         display: 'grid',
         placeItems: 'center',
         zIndex: 50,
@@ -109,9 +138,11 @@ function ImportDataModal({ open = false, onClose = () => {} }) {
       }}
     >
       <div
-        className="card"
+        ref={modalCardRef}
+        className="card import-modal-card"
         style={{
           width: 'min(720px, 100%)',
+          maxHeight: '90vh',
           background: 'var(--color-surface)',
           border: '1px solid var(--color-border)',
           borderRadius: 'var(--radius-md)',
@@ -119,6 +150,8 @@ function ImportDataModal({ open = false, onClose = () => {} }) {
           padding: 16,
           display: 'grid',
           gap: 12,
+          overflow: 'auto',
+          transition: 'transform .2s ease, opacity .2s ease',
         }}
       >
         <div
@@ -128,8 +161,15 @@ function ImportDataModal({ open = false, onClose = () => {} }) {
           Import Data (CSV)
         </div>
 
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-          <button className="btn" onClick={handleUploadClick}>Upload CSV</button>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+          <button
+            ref={firstFocusableRef}
+            className="btn"
+            onClick={handleUploadClick}
+            aria-label="Upload CSV file"
+          >
+            Upload CSV
+          </button>
           <input
             type="file"
             accept=".csv,text/csv"
@@ -142,15 +182,19 @@ function ImportDataModal({ open = false, onClose = () => {} }) {
           </div>
         </div>
 
+        <label htmlFor="csv-textarea" style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>
+          CSV content
+        </label>
         <textarea
+          id="csv-textarea"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Example:
+          placeholder={`Example:
 category,value
 Q1,120
 Q2,180
 Q3,90
-Q4,150"
+Q4,150`}
           rows={12}
           style={{
             width: '100%',
@@ -168,12 +212,12 @@ Q4,150"
         />
 
         {!!error && (
-          <div style={{ color: 'var(--color-error)', fontSize: 13 }}>{error}</div>
+          <div role="alert" style={{ color: 'var(--color-error)', fontSize: 13 }}>{error}</div>
         )}
 
         <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-          <button className="btn btn-ghost" onClick={onClose}>Cancel</button>
-          <button className="btn" onClick={handleImport}>Import</button>
+          <button className="btn btn-ghost" onClick={onClose} aria-label="Cancel import">Cancel</button>
+          <button className="btn" onClick={handleImport} ref={lastFocusableRef} aria-label="Import CSV">Import</button>
         </div>
       </div>
     </div>

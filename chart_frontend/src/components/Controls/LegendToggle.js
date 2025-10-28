@@ -11,7 +11,12 @@ function LegendToggle({ value = true, onToggle = () => {} }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
       <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>Show legend</div>
-      <button className="btn btn-ghost" onClick={onToggle} aria-pressed={value}>
+      <button
+        className="btn btn-ghost"
+        onClick={onToggle}
+        aria-pressed={value}
+        aria-label={value ? 'Hide legend' : 'Show legend'}
+      >
         {value ? 'On' : 'Off'}
       </button>
     </div>

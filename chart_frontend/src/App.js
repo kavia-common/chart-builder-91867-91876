@@ -33,6 +33,9 @@ function AppShell() {
   const [tableOpen, setTableOpen] = useState(true);
   const toggleTable = () => setTableOpen((v) => !v);
 
+  // Responsive sidebar state for mobile
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   // Import states
   const [importOpen, setImportOpen] = useState(false);
   const fileInputRef = useRef(null);
@@ -150,6 +153,8 @@ function AppShell() {
         onExportCSV={handleExportCSV}
         onExportPNG={handleExportPNG}
         onExportJSON={handleExportJSON}
+        onToggleSidebar={() => setSidebarOpen((v) => !v)}
+        isSidebarOpen={sidebarOpen}
       />
 
       {/* Retain hidden file input as a secondary import path (not primary) */}
@@ -165,6 +170,7 @@ function AppShell() {
       <ImportDataModal open={importOpen} onClose={() => setImportOpen(false)} />
 
       <Sidebar
+        id="app-sidebar"
         // Chart Type
         chartType={chartType}
         onChangeChartType={(t) => update({ chartType: t })}
@@ -190,19 +196,28 @@ function AppShell() {
         }}
         showLegend={showLegend}
         onToggleLegend={() => update({ showLegend: !showLegend })}
+        // responsive
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
       />
 
       <main className="main">
         <div className="panel">
           <ChartCanvas ref={chartRef} />
-          <div className={`collapsible ${tableOpen ? 'open' : ''}`}>
+          <div className={`collapsible ${tableOpen ? 'open' : ''}`} aria-live="polite">
             <div className="collapsible-header">
-              <div className="collapsible-title">Data Table</div>
-              <button className="btn btn-ghost" onClick={toggleTable} aria-expanded={tableOpen}>
+              <div className="collapsible-title" id="data-table-title">Data Table</div>
+              <button
+                className="btn btn-ghost"
+                onClick={toggleTable}
+                aria-expanded={tableOpen}
+                aria-controls="data-table-body"
+                aria-label={tableOpen ? 'Hide data table' : 'Show data table'}
+              >
                 {tableOpen ? 'Hide' : 'Show'}
               </button>
             </div>
-            <div className="collapsible-body">
+            <div id="data-table-body" className="collapsible-body" role="region" aria-labelledby="data-table-title">
               <DataTable data={data} />
             </div>
           </div>

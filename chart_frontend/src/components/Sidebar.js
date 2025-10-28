@@ -22,6 +22,8 @@ import { useChartBuilderStore } from '../state/useChartBuilderStore';
  * - onToggleYKey: (yk: string) => void
  * - showLegend: boolean
  * - onToggleLegend: () => void
+ * - open?: boolean                // responsive open/close for mobile
+ * - onClose?: () => void          // optional close handler
  */
 function Sidebar({
   chartType = 'bar',
@@ -36,6 +38,8 @@ function Sidebar({
   onToggleYKey = () => {},
   showLegend = true,
   onToggleLegend = () => {},
+  open = false,
+  onClose = () => {},
 }) {
   const { loadDataset } = useChartBuilderStore();
   const sampleNames = getSampleDatasetNames();
@@ -45,16 +49,33 @@ function Sidebar({
   );
 
   return (
-    <aside className="sidebar scroll-y">
+    <aside
+      id="app-sidebar"
+      className={`sidebar scroll-y ${open ? 'open' : ''}`}
+      aria-label="Chart configuration sidebar"
+      aria-hidden={!open && window.matchMedia && window.matchMedia('(max-width: 900px)').matches}
+    >
       <div className="card" style={{ padding: 12, display: 'grid', gap: 14 }}>
+        {/* Close for mobile */}
+        <div className="sidebar-mobile-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ fontWeight: 700, color: 'var(--color-text)' }}>Settings</div>
+          <button className="btn btn-ghost" onClick={onClose} aria-label="Close sidebar">✕</button>
+        </div>
+
         {/* Chart Type */}
-        <section>
+        <section aria-labelledby="sec-chart-type">
+          <div id="sec-chart-type" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(1px,1px,1px,1px)' }}>
+            Chart Type
+          </div>
           {sectionTitle('Chart Type')}
           <ChartTypeSelect value={chartType} onChange={onChangeChartType} />
         </section>
 
         {/* Data */}
-        <section>
+        <section aria-labelledby="sec-data">
+          <div id="sec-data" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(1px,1px,1px,1px)' }}>
+            Data
+          </div>
           {sectionTitle('Data')}
           <div style={{ display: 'grid', gap: 8 }}>
             <div style={{ display: 'grid', gap: 6 }}>
@@ -71,7 +92,7 @@ function Sidebar({
                 </button>
               ))}
             </div>
-            <button className="btn btn-ghost" onClick={onLoadSample}>
+            <button className="btn btn-ghost" onClick={onLoadSample} aria-label="Load quick demo dataset">
               Quick Demo Dataset
             </button>
             <div style={{ color: 'var(--color-text-muted)', fontSize: 12 }}>
@@ -81,14 +102,20 @@ function Sidebar({
         </section>
 
         {/* Appearance */}
-        <section>
+        <section aria-labelledby="sec-appearance">
+          <div id="sec-appearance" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(1px,1px,1px,1px)' }}>
+            Appearance
+          </div>
           {sectionTitle('Appearance')}
           <ColorPicker colors={colors} onChangeColor={onChangeColor} />
         </section>
 
         {/* Axes */}
         {chartType !== 'pie' && (
-          <section>
+          <section aria-labelledby="sec-axes">
+            <div id="sec-axes" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(1px,1px,1px,1px)' }}>
+              Axes
+            </div>
             {sectionTitle('Axes')}
             <AxesSettings
               xKey={xKey}
@@ -101,7 +128,10 @@ function Sidebar({
         )}
 
         {/* Legend */}
-        <section>
+        <section aria-labelledby="sec-legend">
+          <div id="sec-legend" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(1px,1px,1px,1px)' }}>
+            Legend
+          </div>
           {sectionTitle('Legend')}
           <LegendToggle value={showLegend} onToggle={onToggleLegend} />
         </section>
