@@ -95,7 +95,40 @@
   background: transparent;
   color: var(--color-text);
   border: 1px solid var(--color-border);
+  box-shadow: none;
 }
 .btn-ghost:hover {
   border-color: var(--color-primary);
+}
+
+/* Collapsible area for DataTable with smooth transitions */
+.collapsible {
+  border-radius: var(--radius-md);
+  background: transparent;
+  overflow: hidden;
+  transition: all .25s ease;
+}
+.collapsible-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 4px;
+  color: var(--color-text);
+}
+.collapsible-title {
+  font-weight: 600;
+  color: var(--color-text);
+}
+.collapsible-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .3s ease;
+}
+.collapsible.open .collapsible-body {
+  max-height: 500px; /* accommodates medium tables */
+}
+
+/* Dark-theme friendly subtle row hover */
+.table tbody tr:hover {
+  background: rgba(37,99,235,.05);
 }

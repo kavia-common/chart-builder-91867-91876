@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 /**
  * PUBLIC_INTERFACE
@@ -6,8 +6,12 @@ import React from 'react';
  * Props:
  * - theme: "light" | "dark"
  * - onToggleTheme: () => void
+ * - onImport?: () => void
+ * - onExport?: () => void
  */
-function TopNav({ theme, onToggleTheme }) {
+function TopNav({ theme, onToggleTheme, onImport, onExport }) {
+  const [open, setOpen] = useState(false);
+
   return (
     <header className="topnav">
       <div className="brand">
@@ -28,7 +32,43 @@ function TopNav({ theme, onToggleTheme }) {
         <button className="btn btn-ghost" onClick={onToggleTheme} aria-label="Toggle theme">
           {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
         </button>
-        <button className="btn">New Chart</button>
+        <button className="btn btn-ghost" onClick={onImport} aria-label="Import data">Import</button>
+
+        <div className="menu" style={{ position: 'relative' }}>
+          <button
+            className="btn"
+            onClick={() => setOpen((v) => !v)}
+            aria-haspopup="menu"
+            aria-expanded={open}
+          >
+            Export
+          </button>
+          {open && (
+            <div
+              role="menu"
+              className="card"
+              style={{
+                position: 'absolute',
+                right: 0,
+                top: 'calc(100% + 8px)',
+                padding: 8,
+                minWidth: 180,
+                background: 'var(--color-surface)',
+                border: '1px solid var(--color-border)',
+                borderRadius: 'var(--radius-md)',
+                boxShadow: 'var(--shadow-md)',
+                zIndex: 20,
+              }}
+            >
+              <button className="btn-ghost btn" style={{ width: '100%', marginBottom: 6 }} onClick={onExport}>
+                CSV (.csv)
+              </button>
+              <button className="btn-ghost btn" style={{ width: '100%' }} onClick={() => setOpen(false)}>
+                Image (coming soon)
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );

@@ -19,19 +19,12 @@ import { useChartBuilderStore } from '../state/useChartBuilderStore';
 /**
  * PUBLIC_INTERFACE
  * ChartCanvas: Renders a minimal Recharts chart (Line/Bar/Pie) using responsive container.
- * - Uses local store state: chartType, data, xKey, yKeys, colors, showLegend
+ * - Uses global store state: chartType, data, xKey, yKeys, colors, showLegend
  * - Provides safe in-file fallback dataset and defaults
  */
 function ChartCanvas() {
-  // initialize a minimal local store with sensible defaults for first render
-  const { state } = useChartBuilderStore({
-    chartType: 'bar',
-    xKey: 'category',
-    yKeys: ['value'],
-    colors: ['#2563EB', '#F59E0B', '#10B981', '#EF4444'],
-    showLegend: true,
-    data: [],
-  });
+  // Access store only (App is the single source of truth)
+  const { state } = useChartBuilderStore();
 
   // local fallback dataset if no external data provided
   const fallbackData = useMemo(
