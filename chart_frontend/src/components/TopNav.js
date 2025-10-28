@@ -7,9 +7,11 @@ import React, { useState } from 'react';
  * - theme: "light" | "dark"
  * - onToggleTheme: () => void
  * - onImport?: () => void
- * - onExport?: () => void
+ * - onExportCSV?: () => void
+ * - onExportPNG?: () => void
+ * - onExportJSON?: () => void
  */
-function TopNav({ theme, onToggleTheme, onImport, onExport }) {
+function TopNav({ theme, onToggleTheme, onImport, onExportCSV, onExportPNG, onExportJSON }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -60,16 +62,14 @@ function TopNav({ theme, onToggleTheme, onImport, onExport }) {
                 zIndex: 20,
               }}
             >
-              <button className="btn-ghost btn" style={{ width: '100%', marginBottom: 6 }} onClick={onExport}>
+              <button className="btn-ghost btn" style={{ width: '100%', marginBottom: 6 }} onClick={() => { onExportCSV?.(); setOpen(false); }}>
                 CSV (.csv)
               </button>
-              <button
-                className="btn-ghost btn"
-                style={{ width: '100%' }}
-                aria-label="Close export menu"
-                onClick={() => setOpen(false)}
-              >
-                Image (coming soon)
+              <button className="btn-ghost btn" style={{ width: '100%', marginBottom: 6 }} onClick={() => { onExportPNG?.(); setOpen(false); }}>
+                PNG (.png)
+              </button>
+              <button className="btn-ghost btn" style={{ width: '100%' }} onClick={() => { onExportJSON?.(); setOpen(false); }}>
+                JSON (.json)
               </button>
             </div>
           )}

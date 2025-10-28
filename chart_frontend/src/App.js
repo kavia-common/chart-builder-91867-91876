@@ -103,13 +103,53 @@ function AppShell() {
   // Memoized columns for small helpers
   const columns = useMemo(() => (Array.isArray(data) && data[0] ? Object.keys(data[0]) : []), [data]);
 
+  // Create ref for ChartCanvas export API
+  const chartRef = useRef(null);
+
+  // PUBLIC_INTERFACE
+  const handleExportPNG = async () => {
+    try {
+      const url = await chartRef.current?.getPngDataUrl();
+      if (!url) return;
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'chart.png';
+      a.click();
+    } catch (e) {
+      // Silently ignore but could add toast in a real app
+      // eslint-disable-next-line no-console
+      console.warn('PNG export failed:', e);
+    }
+  };
+
+  // PUBLIC_INTERFACE
+  const handleExportJSON = () => {
+    const payload = {
+      chartType,
+      xKey,
+      yKeys,
+      showLegend,
+      colors,
+      data: Array.isArray(data) ? data : [],
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'chart-config.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="app-shell">
       <TopNav
         theme={theme}
         onToggleTheme={toggleTheme}
         onImport={triggerImport}
-        onExport={handleExportCSV}
+        onExportCSV={handleExportCSV}
+        onExportPNG={handleExportPNG}
+        onExportJSON={handleExportJSON}
       />
 
       {/* Retain hidden file input as a secondary import path (not primary) */}
@@ -154,7 +194,7 @@ function AppShell() {
 
       <main className="main">
         <div className="panel">
-          <ChartCanvas />
+          <ChartCanvas ref={chartRef} />
           <div className={`collapsible ${tableOpen ? 'open' : ''}`}>
             <div className="collapsible-header">
               <div className="collapsible-title">Data Table</div>
