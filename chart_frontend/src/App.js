@@ -1,47 +1,41 @@
-import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
+import React, { useEffect, useState } from 'react';
 import './App.css';
+import './theme/theme.css';
+import TopNav from './components/TopNav';
+import Sidebar from './components/Sidebar';
+import ChartCanvas from './components/ChartCanvas';
+import DataTable from './components/DataTable';
+import { getSampleData } from './utils/sampleData';
 
-// PUBLIC_INTERFACE
+/**
+ * PUBLIC_INTERFACE
+ * App: Base application shell with Ocean Professional theme and layout.
+ * - Top navigation
+ * - Sidebar placeholder
+ * - Main workspace with Chart and Data table
+ */
 function App() {
   const [theme, setTheme] = useState('light');
+  const [data] = useState(getSampleData());
 
-  // Effect to apply theme to document element
+  // Apply theme attribute for CSS variables switching
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
   // PUBLIC_INTERFACE
-  const toggleTheme = () => {
-    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
-  };
+  const toggleTheme = () => setTheme((t) => (t === 'light' ? 'dark' : 'light'));
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <button 
-          className="theme-toggle" 
-          onClick={toggleTheme}
-          aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-        >
-          {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
-        </button>
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <p>
-          Current theme: <strong>{theme}</strong>
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app-shell">
+      <TopNav theme={theme} onToggleTheme={toggleTheme} />
+      <Sidebar />
+      <main className="main">
+        <div className="panel">
+          <ChartCanvas />
+          <DataTable data={data} />
+        </div>
+      </main>
     </div>
   );
 }

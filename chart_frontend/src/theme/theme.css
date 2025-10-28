@@ -1,0 +1,123 @@
+:root {
+  /* Ocean Professional Theme Variables */
+  --color-primary: #2563EB; /* primary blue */
+  --color-primary-600: #1D4ED8;
+  --color-primary-700: #1E40AF;
+
+  --color-secondary: #F59E0B; /* amber accent */
+  --color-secondary-600: #D97706;
+
+  --color-success: #10B981;
+  --color-error: #EF4444;
+  --color-warning: #F59E0B;
+
+  --color-bg: #f9fafb; /* background */
+  --color-surface: #ffffff; /* surfaces/cards */
+  --color-text: #111827; /* main text */
+  --color-text-muted: #6B7280; /* secondary text */
+  --color-border: #E5E7EB; /* soft border */
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.08);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+
+  --gradient-accent: linear-gradient(135deg, rgba(37,99,235,0.08), rgba(249,250,251,1));
+}
+
+/* Dark mode support (optional initial scaffold) */
+[data-theme="dark"] {
+  --color-bg: #0B1220;
+  --color-surface: #0E1726;
+  --color-text: #E5E7EB;
+  --color-text-muted: #9CA3AF;
+  --color-border: #111827;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 6px 14px rgba(0, 0, 0, 0.45);
+}
+
+/* Base resets and utilities */
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a { color: inherit; text-decoration: none; }
+button { font: inherit; }
+
+/* Layout helpers */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn {
+  appearance: none;
+  border: 1px solid transparent;
+  background: var(--color-primary);
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease, background .2s ease, border-color .2s ease;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, .25);
+}
+.btn:hover {
+  background: var(--color-primary-600);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(37, 99, 235, .28);
+}
+.btn:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 8px rgba(37, 99, 235, .22);
+}
+
+.btn-secondary {
+  background: var(--color-secondary);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, .25);
+}
+.btn-secondary:hover {
+  background: var(--color-secondary-600);
+}
+
+/* Scroll areas */
+.scroll-y {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Page layout scaffolding */
+.app-shell {
+  display: grid;
+  grid-template-rows: 56px 1fr;
+  grid-template-columns: 260px 1fr;
+  grid-template-areas:
+    "topnav topnav"
+    "sidebar main";
+  min-height: 100vh;
+  background: var(--gradient-accent);
+}
+
+@media (max-width: 900px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "topnav"
+      "main";
+  }
+}
