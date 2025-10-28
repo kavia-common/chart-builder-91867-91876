@@ -5,6 +5,7 @@ import TopNav from './components/TopNav';
 import Sidebar from './components/Sidebar';
 import ChartCanvas from './components/ChartCanvas';
 import DataTable from './components/DataTable';
+import ImportDataModal from './components/ImportDataModal';
 import { getSampleData } from './utils/sampleData';
 import { parseCsv } from './utils/csv';
 import { ChartBuilderProvider, useChartBuilderStore } from './state/useChartBuilderStore';
@@ -32,13 +33,14 @@ function AppShell() {
   const [tableOpen, setTableOpen] = useState(true);
   const toggleTable = () => setTableOpen((v) => !v);
 
-  // Import/Export handlers
+  // Import states
+  const [importOpen, setImportOpen] = useState(false);
   const fileInputRef = useRef(null);
 
   // PUBLIC_INTERFACE
-  const triggerImport = () => fileInputRef.current?.click();
+  const triggerImport = () => setImportOpen(true);
 
-  // PUBLIC_INTERFACE
+  // Keep quick file import support (hidden input) for convenience
   const handleImportFile = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -69,7 +71,15 @@ function AppShell() {
     const rows = Array.isArray(data) ? data : [];
     if (!rows.length) return;
     const cols = Object.keys(rows[0]);
-    const csv = [cols.join(','), ...rows.map((r) => cols.map((c) => r[c]).join(','))].join('\n');
+    // Quote fields containing commas or quotes
+    const esc = (v) => {
+      const s = String(v ?? '');
+      if (/[",\n]/.test(s)) {
+        return `"${s.replace(/"/g, '""')}"`;
+      }
+      return s;
+    };
+    const csv = [cols.map(esc).join(','), ...rows.map((r) => cols.map((c) => esc(r[c])).join(','))].join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -98,7 +108,7 @@ function AppShell() {
         onExport={handleExportCSV}
       />
 
-      {/* hidden file input for Import */}
+      {/* Retain hidden file input as a secondary import path (not primary) */}
       <input
         type="file"
         accept=".csv,text/csv"
@@ -106,6 +116,9 @@ function AppShell() {
         onChange={handleImportFile}
         style={{ display: 'none' }}
       />
+
+      {/* Import Modal */}
+      <ImportDataModal open={importOpen} onClose={() => setImportOpen(false)} />
 
       <Sidebar
         // Chart Type

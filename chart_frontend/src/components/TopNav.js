@@ -63,7 +63,12 @@ function TopNav({ theme, onToggleTheme, onImport, onExport }) {
               <button className="btn-ghost btn" style={{ width: '100%', marginBottom: 6 }} onClick={onExport}>
                 CSV (.csv)
               </button>
-              <button className="btn-ghost btn" style={{ width: '100%' }} onClick={() => setOpen(false)}>
+              <button
+                className="btn-ghost btn"
+                style={{ width: '100%' }}
+                aria-label="Close export menu"
+                onClick={() => setOpen(false)}
+              >
                 Image (coming soon)
               </button>
             </div>
